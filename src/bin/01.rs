@@ -1,3 +1,6 @@
+use std::collections::HashMap;
+use std::ops::AddAssign;
+
 advent_of_code::solution!(1);
 
 pub fn part_one(input: &str) -> Option<u32> {
@@ -25,7 +28,7 @@ pub fn part_one(input: &str) -> Option<u32> {
 
 pub fn part_two(input: &str) -> Option<u32> {
     let mut ids: Vec<u32> = Vec::new();
-    let mut leng: Vec<u32> = Vec::new();
+    let mut sum_list: HashMap<u32, u32> = HashMap::new();
     input.lines().for_each(|line| {
             let mut parts = line.split_whitespace();
             let f = parts.next().unwrap();
@@ -33,14 +36,19 @@ pub fn part_two(input: &str) -> Option<u32> {
             ids.push(f1);
             let s = parts.next().unwrap();
             let s1:u32 = s.parse().unwrap();
-            leng.push(s1);
+
+            match sum_list.get_mut(&s1) {
+                Some(exist) => exist.add_assign(s1),
+                _ => {
+                    sum_list.insert(s1, s1); ()
+                },
+            }
         });
-    
 
     Some(ids.iter().map(|v| {
-        let o: u32 = leng.iter().filter(|f| *f == v).count() as u32;
-        *v * o
-    }).sum())
+        sum_list.get(v).unwrap_or(&0)
+        }).sum()
+    )
 }
 
 #[cfg(test)]
