@@ -5,8 +5,6 @@ pub fn part_one(input: &str) -> Option<u32> {
     let mut leng: Vec<u32> = Vec::new();
     input.lines().for_each(|line| {
             let mut parts = line.split_whitespace();
-            //let f: i32 = parts[0]..parse();
-            //et mut isinit = true;
             let f = parts.next().unwrap();
             let f1:u32 = f.parse().unwrap();
             ids.push(f1);
@@ -16,11 +14,13 @@ pub fn part_one(input: &str) -> Option<u32> {
         });
     ids.sort();
     leng.sort();
-    
-    let it = ids.iter().zip(leng.iter());
-    Some(it.map(|x| {
-        x.0.abs_diff(*x.1)
-    }).sum())
+
+    Some(ids.iter()
+        .zip(leng.iter())
+        .map(|x| {
+            x.0.abs_diff(*x.1)
+        }).sum()
+    )
 }
 
 pub fn part_two(input: &str) -> Option<u32> {
@@ -28,8 +28,6 @@ pub fn part_two(input: &str) -> Option<u32> {
     let mut leng: Vec<u32> = Vec::new();
     input.lines().for_each(|line| {
             let mut parts = line.split_whitespace();
-            //let f: i32 = parts[0]..parse();
-            //et mut isinit = true;
             let f = parts.next().unwrap();
             let f1:u32 = f.parse().unwrap();
             ids.push(f1);
