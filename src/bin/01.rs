@@ -7,22 +7,20 @@ pub fn part_one(input: &str) -> Option<u32> {
     let mut ids: Vec<u32> = Vec::new();
     let mut leng: Vec<u32> = Vec::new();
     input.lines().for_each(|line| {
-            let mut parts = line.split_whitespace();
-            let f = parts.next().unwrap();
-            let f1:u32 = f.parse().unwrap();
-            ids.push(f1);
-            let s = parts.next().unwrap();
-            let s1:u32 = s.parse().unwrap();
-            leng.push(s1);
-        });
+        let mut parts = line.split_whitespace();
+        let f = parts.next().unwrap().parse().unwrap();
+        let s = parts.next().unwrap().parse().unwrap();
+        ids.push(f);
+        leng.push(s);
+    });
     ids.sort();
     leng.sort();
 
-    Some(ids.iter()
-        .zip(leng.iter())
-        .map(|x| {
-            x.0.abs_diff(*x.1)
-        }).sum()
+    Some(
+        ids.iter()
+            .zip(leng.iter())
+            .map(|x| x.0.abs_diff(*x.1))
+            .sum(),
     )
 }
 
@@ -30,25 +28,21 @@ pub fn part_two(input: &str) -> Option<u32> {
     let mut ids: Vec<u32> = Vec::new();
     let mut sum_list: HashMap<u32, u32> = HashMap::new();
     input.lines().for_each(|line| {
-            let mut parts = line.split_whitespace();
-            let f = parts.next().unwrap();
-            let f1:u32 = f.parse().unwrap();
-            ids.push(f1);
-            let s = parts.next().unwrap();
-            let s1:u32 = s.parse().unwrap();
+        let mut parts = line.split_whitespace();
+        let f = parts.next().unwrap().parse().unwrap();
+        let s = parts.next().unwrap().parse().unwrap();
 
-            match sum_list.get_mut(&s1) {
-                Some(exist) => exist.add_assign(s1),
-                _ => {
-                    sum_list.insert(s1, s1); ()
-                },
+        ids.push(f);
+        match sum_list.get_mut(&s) {
+            Some(exist) => exist.add_assign(s),
+            _ => {
+                sum_list.insert(s, s);
+                ()
             }
-        });
+        }
+    });
 
-    Some(ids.iter().map(|v| {
-        sum_list.get(v).unwrap_or(&0)
-        }).sum()
-    )
+    Some(ids.iter().map(|v| sum_list.get(v).unwrap_or(&0)).sum())
 }
 
 #[cfg(test)]
