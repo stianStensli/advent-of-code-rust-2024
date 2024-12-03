@@ -121,15 +121,12 @@ pub fn part_two(input: &str) -> Option<i64> {
     Some(input.lines().map(|line| {
         let values: Vec<u32> = line.split_whitespace()
             .map(|l| l.parse().unwrap()).collect();
-        let temp2 = values.clone();
-        let temp:Vec<&u32> = temp2.iter().collect();
+        let temp:Vec<&u32> = values.iter().collect();
         if is_ok(temp) {
             return 1
         }
         for skip in 0..values.len() {
-            let temp3  =  values.clone();
-            let temp2 = temp3.into_iter();
-            let temp: Vec<u32> = temp2.enumerate()
+            let temp: Vec<u32> = values.clone().into_iter().enumerate()
                 .filter(|&(i, _)| i != skip)
                 .map(|(_, v)| v)
                 .collect::<Vec<_>>();
