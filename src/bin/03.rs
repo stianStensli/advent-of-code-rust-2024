@@ -2,7 +2,7 @@ use regex::Regex;
 advent_of_code::solution!(3);
 
 pub fn part_one(input: &str) -> Option<u64> {
-    let mul_regex = Regex::new(r"mul\((\d+),(\d+)\)").expect("Invalid regex");
+    let mul_regex = Regex::new(r"mul\(([0-9]+),([0-9]+)\)").expect("Invalid regex");
 
     Some(
         mul_regex
@@ -18,7 +18,7 @@ pub fn part_one(input: &str) -> Option<u64> {
 
 pub fn part_two(input: &str) -> Option<u64> {
     let mul_regex =
-        Regex::new(r"(don't\(\))|(do\(\))|(mul\((\d+),(\d+)\))").expect("Invalid regex");
+        Regex::new(r"(don't\(\))|(do\(\))|(mul\(([0-9]+),([0-9]+)\))").expect("Invalid regex");
 
     let mut is_a_go = true;
     Some(
