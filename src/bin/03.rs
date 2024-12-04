@@ -17,43 +17,27 @@ pub fn part_one(input: &str) -> Option<u64> {
 }
 
 pub fn part_two(input: &str) -> Option<u64> {
-    let mut is_dont = false;
-    let mut is_dont_index = 0;
+    let mul_regex =
+        Regex::new(r"(don't\(\))|(do\(\))|(mul\((\d+),(\d+)\))").expect("Invalid regex");
 
+    let mut is_a_go = true;
     Some(
-        input
-            .split("don't()")
-            .map(|dt| {
-                if is_dont_index != 0 {
-                    is_dont = true;
-                } else {
-                    is_dont_index += 1
+        mul_regex
+            .captures_iter(input)
+            .map(|c| {
+                if c.get(1).is_some() {
+                    is_a_go = false;
+                } else if c.get(2).is_some() {
+                    is_a_go = true;
+                } else if c.get(3).is_some() {
+                    if is_a_go {
+                        return c.get(4).unwrap().as_str().parse::<u64>().unwrap()
+                            * c.get(5).unwrap().as_str().parse::<u64>().unwrap();
+                    }
                 }
-                let mut is_do_index = 0;
-                dt.split("do()")
-                    .map(|d| {
-                        if is_do_index != 0 {
-                            is_dont = false;
-                        } else{
-                            is_do_index += 1;
-                        }
-                        if is_dont {
-                            return 0;
-                        }
-                        let mul_regex = Regex::new(r"mul\((\d+),(\d+)\)").expect("Invalid regex");
-                        let res = mul_regex
-                            .captures_iter(d)
-                            .map(|m| {
-                                let first = m.get(1).unwrap().as_str().parse::<u64>().unwrap();
-                                let second = m.get(2).unwrap().as_str().parse::<u64>().unwrap();
-                                first * second
-                            })
-                            .sum::<u64>();
-                        res
-                    })
-                    .sum::<u64>()
+                0
             })
-            .sum::<u64>(),
+            .sum(),
     )
 }
 
