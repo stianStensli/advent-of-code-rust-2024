@@ -1,29 +1,12 @@
-advent_of_code::solution!(4);
+use advent_of_code::advent_util::get_value_at;
 
-fn get_char_at(game: &Vec<Vec<char>>, x: usize, y: usize) -> Option<char>{
-    match game.get(x) {
-        Some(exist) =>  match exist.get(y) {
-            Some(exist) => {
-                Some(*exist)},
-            _ => None
-        },
-        _ => None
-    }
-}
+advent_of_code::solution!(4);
 
 fn get_point(game: &Vec<Vec<char>>, x: usize, y: usize, dir: u32, next_char: &char)
              -> Option<(usize, usize, u32)> {
     let next_char = *next_char;
-    let value = match game.get(x) {
-        Some(exist) =>  match exist.get(y) {
-            Some(exist) => {
-                //println!("{:?}",exist);
-            Some(*exist)},
-            _ => None
-        },
-        _ => None
-    };
-    //println!("{:?}",value);
+    let value = get_value_at(game, x, y);
+
     match value {
         Some(value) => {
             if value == next_char {
@@ -43,8 +26,7 @@ pub fn part_one(input: &str) -> Option<u64> {
     let mut start_points:Vec<(usize, usize, u32)> = Vec::new();
 
     for i in 0..game.len() {
-        //println!("{:?}",game[i]);
-        let row = game[i].clone();
+        let row = &game[i];
         for j in 0..row.len() {
             if row[j] == 'X' {
                 start_points.push((i, j, 0));
@@ -54,7 +36,7 @@ pub fn part_one(input: &str) -> Option<u64> {
 
     for next_char in ['M', 'A', 'S'] {
         let mut next_point:Vec<(usize, usize, u32)> = Vec::new();
-        for point in start_points.clone() {
+        for point in &start_points {
             let can_back = point.1 > 0 &&
                 (point.2 == 0 || point.2 == 1);
             let can_back_up = point.0 > 0 && point.1 > 0  &&
@@ -129,7 +111,6 @@ pub fn part_one(input: &str) -> Option<u64> {
             if can_d_b {
                 let x = point.0 + 1;
                 let y = point.1 - 1;
-                //println!("{}x, {}y", x, y);
                 match get_point(&game, x, y, 8, &next_char){
                     Some(point) => {next_point.push(point);},
                     _ => ()
@@ -151,7 +132,7 @@ pub fn part_two(input: &str) -> Option<u64> {
 
     for i in 0..game.len() {
         //println!("{:?}",game[i]);
-        let row = game[i].clone();
+        let row = &game[i];
         for j in 0..row.len() {
             if row[j] == 'A' {
                 start_points.push((i, j));
@@ -160,21 +141,21 @@ pub fn part_two(input: &str) -> Option<u64> {
     }
 
     let mut xmas= 0;
-    for point in start_points.clone() {
+    for point in &start_points {
         let can_back_up = point.0 > 0 && point.1 > 0;
         let can_f_up = point.0 > 0;
         let can_d_b = point.1 > 0;
         if !can_back_up || !can_f_up || !can_d_b {
             continue
         }
-        let back_up = get_char_at(&game, point.0 - 1, point.1 - 1).unwrap_or('.');
-        let f_d = get_char_at(&game, point.0 + 1, point.1 + 1).unwrap_or('.');
+        let back_up = get_value_at(&game, point.0 - 1, point.1 - 1).unwrap_or('.');
+        let f_d = get_value_at(&game, point.0 + 1, point.1 + 1).unwrap_or('.');
         if !((back_up == 'M' && f_d == 'S') ||
             (back_up == 'S' && f_d == 'M')) {
             continue
         }
-        let f_up = get_char_at(&game, point.0 - 1, point.1 + 1).unwrap_or('.');
-        let f_d_b = get_char_at(&game, point.0 + 1, point.1 - 1).unwrap_or('.');
+        let f_up = get_value_at(&game, point.0 - 1, point.1 + 1).unwrap_or('.');
+        let f_d_b = get_value_at(&game, point.0 + 1, point.1 - 1).unwrap_or('.');
         if !((f_up == 'M' && f_d_b == 'S') ||
             (f_up == 'S' && f_d_b == 'M')) {
             continue

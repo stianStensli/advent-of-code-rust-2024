@@ -8,7 +8,6 @@ pub fn part_one(input: &str) -> Option<u64> {
         mul_regex
             .captures_iter(input)
             .map(|m| {
-                //println!("{}",m.get(0).unwrap().as_str());
                 let first = m.get(1).unwrap().as_str().parse::<u64>().unwrap();
                 let second = m.get(2).unwrap().as_str().parse::<u64>().unwrap();
                 first * second
@@ -27,31 +26,29 @@ pub fn part_two(input: &str) -> Option<u64> {
             .map(|dt| {
                 if is_dont_index != 0 {
                     is_dont = true;
+                } else {
+                    is_dont_index += 1
                 }
-                is_dont_index += 1;
                 let mut is_do_index = 0;
                 dt.split("do()")
                     .map(|d| {
                         if is_do_index != 0 {
                             is_dont = false;
+                        } else{
+                            is_do_index += 1;
                         }
-                        is_do_index += 1;
-                        //println!("str: {:?}, dont: {:}, do: {:}", d, is_dont_index, is_do_index);
                         if is_dont {
-                            //println!("return");
                             return 0;
                         }
                         let mul_regex = Regex::new(r"mul\((\d+),(\d+)\)").expect("Invalid regex");
                         let res = mul_regex
                             .captures_iter(d)
                             .map(|m| {
-                                //println!("{}", m.get(0).unwrap().as_str());
                                 let first = m.get(1).unwrap().as_str().parse::<u64>().unwrap();
                                 let second = m.get(2).unwrap().as_str().parse::<u64>().unwrap();
                                 first * second
                             })
                             .sum::<u64>();
-                        //println!("{}", res);
                         res
                     })
                     .sum::<u64>()
