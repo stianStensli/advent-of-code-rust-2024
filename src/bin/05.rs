@@ -1,3 +1,4 @@
+use std::cmp::min;
 use std::collections::HashMap;
 
 advent_of_code::solution!(5);
@@ -33,21 +34,17 @@ pub fn part_one(input: &str) -> Option<u32> {
                     for i in 0..page.len() {
                         let value = page[i];
                         let rule_set = rules.get(&value);
-                        println!("v: {}, rs: {:?}, prev: {:?}", value, rule_set, prev_values);
                         if let Some(rule_set) = rule_set {
                             for j in 0..rule_set.len() {
                                 let r = rule_set[j];
                                 if prev_values.contains(&r) {
-                                    println!("no go");
                                     return 0;
                                 }
                             }
                         }
-                        println!("go");
                         prev_values.push(value)
                     }
 
-                    println!("go full!!");
                     let i = (page.len() - 1) / 2;
                     return page[i];
                 }
@@ -59,13 +56,11 @@ pub fn part_one(input: &str) -> Option<u32> {
 pub fn part_two(input: &str) -> Option<u32> {
     let mut is_rules = true;
     let mut rules: HashMap<u32, Vec<u32>> = HashMap::new();
-    let mut error_list = Vec::new();
-    input.lines().for_each(|l| {
-        if l.is_empty() {
+    Some(input.lines().map(|l| {
+        return if l.is_empty() {
             is_rules = false;
-            return;
-        }
-        if is_rules {
+            0
+        } else if is_rules {
             let pair = l.split('|').collect::<Vec<_>>();
             let key = pair[0].parse::<u32>().unwrap();
             let value = pair[1].parse::<u32>().unwrap();
@@ -75,52 +70,72 @@ pub fn part_two(input: &str) -> Option<u32> {
             } else {
                 rules.insert(key, vec![value]);
             }
-            return;
+            0
         } else {
             let page = l
                 .split(',')
                 .map(|x| x.parse::<u32>().unwrap_or(0))
                 .collect::<Vec<u32>>();
             let mut prev_values = Vec::new();
-            for i in 0..page.len() {
+            let mut error_values = Vec::new();
+            'outer: for i in 0..page.len() {
                 let value = page[i];
                 let rule_set = rules.get(&value);
                 if let Some(rule_set) = rule_set {
                     for j in 0..rule_set.len() {
                         let r = rule_set[j];
                         if prev_values.contains(&r) {
-                            error_list.push(page);
-                            return;
+                            error_values.push(value);
+                            continue 'outer;
                         }
                     }
                 }
                 prev_values.push(value)
             }
-            return;
-        }
-    });
-    println!("{:?}", error_list);
-    Some(
-        error_list
-            .iter()
-            .map(|page| {
-                let mut prev_values = Vec::new();
-                for i in 0..page.len() {
-                    let value = page[i];
-                    let rule_set = rules.get(&value);
-                    if let Some(rule_set) = rule_set {
-                        for j in 0..rule_set.len() {
-                            let r = rule_set[j];
-                            if prev_values.contains(&r) {
-                                return;
-                            }
+
+            if error_values.len() > 0 {
+                let mut isplaced = Vec::new();
+                loop {
+                    for error_index in 0..error_values.len() {
+                        if isplaced.contains(&error_index) {
+                            continue;
                         }
+                        let error_value = error_values[error_index];
+                        let rule_set = rules.get(&error_value);
+                        if let Some(rule_set) = rule_set {
+                            let mut lowest_index = 99999999;
+                            let mut all_rules_match = true;
+                            for rule in rule_set {
+                                if !error_values.contains(rule) && !prev_values.contains(rule) {
+                                    continue;
+                                }
+                                let mut rule_match = false;
+                                for prev_values_index in 0..prev_values.len() {
+                                    if prev_values[prev_values_index] == *rule {
+                                        lowest_index = min(lowest_index, prev_values_index);
+                                        rule_match = true;
+                                        break;
+                                    }
+                                }
+                                all_rules_match = rule_match && all_rules_match
+                            }
+                            if all_rules_match {
+                                prev_values.insert(lowest_index, error_value);
+                                isplaced.push(error_index);
+                            }
+                        } else {panic!("not in ruleset")}
+                    }
+                    if error_values.len() == isplaced.len() {
+                        break;
                     }
                 }
+                let i = (prev_values.len() - 1) / 2;
+                prev_values[i]
+            } else {
                 0
-            })
-            .sum(),
-    )
+            }
+        }
+    }).sum())
 }
 
 #[cfg(test)]
