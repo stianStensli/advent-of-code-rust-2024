@@ -124,14 +124,12 @@ pub fn part_one(input: &str) -> Option<u64> {
 }
 
 pub fn part_two(input: &str) -> Option<u64> {
-
     let game = input.lines()
         .map(|line| line.chars().into_iter().collect::<Vec<char>>())
         .collect::<Vec<Vec<char>>>();
     let mut start_points:Vec<(usize, usize)> = Vec::new();
 
     for i in 0..game.len() {
-        //println!("{:?}",game[i]);
         let row = &game[i];
         for j in 0..row.len() {
             if row[j] == 'A' {
