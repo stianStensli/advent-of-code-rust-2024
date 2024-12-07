@@ -138,6 +138,7 @@ pub fn part_two(input: &str) -> Option<u64> {
 
     let mut point = start_point.clone();
     let mut obstic: HashSet<(i32, i32)> = HashSet::new();
+    let mut is_checked: HashSet<(i32, i32)> = HashSet::new();
     obstic.insert((start_point.0, start_point.1));
     'main: loop {
         let mut next_start_points: Vec<(i32, i32, u32)> = Vec::new();
@@ -145,9 +146,12 @@ pub fn part_two(input: &str) -> Option<u64> {
         let y: i32 = point.1;
         let mut temp = game.clone();
         temp[x as usize][y as usize] = '#';
-        if !obstic.contains(&(x, y)) && get_nr_visit(&temp, start_point.clone()).is_none() {
+        if !is_checked.contains(&(x, y)) &&
+            get_nr_visit(&temp, point.clone()).is_none() {
             obstic.insert((x, y));
         }
+        is_checked.insert((x, y));
+
         //println!("{:?}",can_d_b);
         if point.2 == BACK {
             // back
