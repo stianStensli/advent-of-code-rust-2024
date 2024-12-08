@@ -9,9 +9,8 @@ fn add_or_multi(to_check: u64, values: &Vec<u64>, use_concat: bool, sum: u64, in
 
     if use_concat {
         let concat = first * i64::from(10).pow(second.ilog(10) + 1) as u64 + second;
-        let res = add_or_multi(to_check, values, use_concat, concat, index + 1);
-        if res > 0 {
-            return res;
+        if add_or_multi(to_check, values, use_concat, concat, index + 1) > 0 {
+            return to_check;
         }
     }
     if add_or_multi(to_check, values, use_concat, sum + second, index + 1) > 0 {
