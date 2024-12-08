@@ -1,38 +1,24 @@
 advent_of_code::solution!(7);
 
-fn add_or_multi(to_check: u64, values: Vec<u64>, use_concat: bool) -> u64 {
-    let first = values[0];
-    if values.len() == 1 || first > to_check {
-        return if to_check == first { to_check } else { 0 };
+fn add_or_multi(to_check: u64, values: &Vec<u64>, use_concat: bool, sum: u64, index: usize) -> u64 {
+    if index == values.len() || sum > to_check {
+        return if to_check == sum { to_check } else { 0 };
     }
-
-    let second = values[1];
-    let base: Vec<u64> = values.into_iter().skip(2).collect();
+    let first = sum;
+    let second = values[index];
 
     if use_concat {
-        let concat = &mut first.clone().to_string();
-        let mut new_concat: Vec<u64> = base.clone();
-        concat.push_str(&*&second.clone().to_string());
-        new_concat.insert(0, concat.parse::<u64>().unwrap());
-        let res = add_or_multi(to_check, new_concat, use_concat);
-        if  res > 0 {
-            return res
+        let concat = first * i64::from(10).pow(second.ilog(10) + 1) as u64 + second;
+        let res = add_or_multi(to_check, values, use_concat, concat, index + 1);
+        if res > 0 {
+            return res;
         }
     }
-
-    let mut new: Vec<u64> = base.clone();
-    new.insert(0, first + second);
-
-    if add_or_multi(to_check, new, use_concat) > 0 {
-        return to_check
+    if add_or_multi(to_check, values, use_concat, sum + second, index + 1) > 0 {
+        return to_check;
     }
-
-    let mut new: Vec<u64> = base.clone();
-    new.insert(0, first * second);
-
-    add_or_multi(to_check, new, use_concat)
+    add_or_multi(to_check, values, use_concat, first * second, index + 1)
 }
-
 
 pub fn part_one(input: &str) -> Option<u64> {
     Some(
@@ -49,7 +35,7 @@ pub fn part_one(input: &str) -> Option<u64> {
                     .collect::<Vec<u64>>();
                 let mut max = 0;
                 let mut min = 0;
-                factors.iter().for_each(|f|
+                factors.iter().for_each(|f| {
                     if max == 0 {
                         max = *f;
                         min = *f;
@@ -60,14 +46,14 @@ pub fn part_one(input: &str) -> Option<u64> {
                         max *= f;
                         min += *f;
                     }
-                );
+                });
 
                 if max < value && min > value {
                     0
-                }else if max == value || min == value {
+                } else if max == value || min == value {
                     value
                 } else {
-                    add_or_multi(value, factors, false)
+                    add_or_multi(value, &factors, false, factors[0], 1)
                 }
             })
             .sum(),
@@ -88,7 +74,7 @@ pub fn part_two(input: &str) -> Option<u64> {
                     .map(|num| num.parse::<u64>().unwrap())
                     .collect::<Vec<u64>>();
 
-                add_or_multi(value, factors, true)
+                add_or_multi(value, &factors, true, factors[0], 1)
             })
             .sum(),
     )
